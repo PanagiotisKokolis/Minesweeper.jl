@@ -1,6 +1,6 @@
 # basic io and menu functionality using SDL
 
-# simple "game" loop: poll for arrow events, print out each arrow pressed, print escape when escape pressed, and countdown 5s then quit program
+# simple "game" loop: poll for arrow events, print out each arrow pressed, print escape when escape pressed, and exit if escape pressed twice
 
 using SimpleDirectMediaLayer
 using SimpleDirectMediaLayer.LibSDL2
