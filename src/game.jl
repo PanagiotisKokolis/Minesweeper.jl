@@ -6,6 +6,9 @@
 end
 
 
+"""
+Represents a game of Minesweeper, parameterized by its size N x M.
+"""
 struct MinesweeperGame{N, M}
     # boards, each interesting property as a separate 2d array
     mines::SMatrix{N, M, Bool}
