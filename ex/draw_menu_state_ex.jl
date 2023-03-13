@@ -204,7 +204,8 @@ render(::QuitState, _) = return
 function render(state::GameState, renderer) 
     # perform rendering, including dispatching on gameplay state. also do setup, cleanup tasks.
 
-    # clear the canvas of our backbuffer
+    # clear the canvas of our backbuffer to the background color
+    SDL_SetRenderDrawColor(renderer, 25, 25, 25, 200) # dark grey
     SDL_RenderClear(renderer)
     # draw 
     _render(state, renderer)
@@ -237,8 +238,44 @@ function _render(::MenuState, renderer)
 
 end
 
+const occup_color = (20, 250, 0, 200)
+const empty_color = (250, 0, 70, 20)
+# utility for choosing the rectangle fill color based on current board position
+rect_color(::BoardState{N}, pos) where N = pos == N ? occup_color : empty_color
+
 function _render(state::PlayState, renderer)
     # render the gameplay state
+
+    side_pix = 50
+    rects = Tuple{Symbol, Ref{SDL_Rect}}[]
+    # render 5 squares, unoccupied squares will be white, the occupied square will be 
+    # green.
+    up_rect = Ref(SDL_Rect((WIN_WIDTH - side_pix)÷2, (WIN_HEIGHT - side_pix) ÷ 2 - side_pix,
+                            side_pix, side_pix))
+    push!(rects, (:UP, up_rect))
+    # center box, draw and fill with color 
+    center_rect = Ref(SDL_Rect((WIN_WIDTH - side_pix) ÷ 2, (WIN_HEIGHT - side_pix) ÷ 2,
+                                side_pix, side_pix))
+    push!(rects, (:CENTER, center_rect))
+
+    down_rect = Ref(SDL_Rect((WIN_WIDTH - side_pix) ÷ 2, (WIN_HEIGHT - side_pix) ÷ 2 + side_pix,
+                              side_pix, side_pix))
+    push!(rects, (:DOWN, down_rect))
+
+    left_rect = Ref(SDL_Rect((WIN_WIDTH - side_pix) ÷ 2 - side_pix, (WIN_HEIGHT - side_pix) ÷ 2,
+                              side_pix, side_pix))
+    push!(rects, (:LEFT, left_rect))
+
+    right_rect = Ref(SDL_Rect((WIN_WIDTH - side_pix) ÷ 2 + side_pix, (WIN_HEIGHT - side_pix) ÷ 2,
+                              side_pix, side_pix))
+    push!(rects, (:RIGHT, right_rect))
+
+    for (pos, rect) in rects
+        SDL_RenderDrawRect(renderer, rect)
+        SDL_SetRenderDrawColor(renderer, rect_color(state.boardstate, pos)...)
+        SDL_RenderFillRect(renderer, rect)
+    end
+
     return
 end
 
@@ -257,15 +294,13 @@ function main()
     call_SDL(() -> SDL_Init(SDL_INIT_EVERYTHING), res -> res == 0)
     # Initialize TTF for text rendering
     call_SDL(() -> TTF_Init(), res -> res == 0)
-    ttf_font_ref[] = call_SDL(() -> TTF_OpenFont("ex/Conquest.ttf", 32), res -> res != C_NULL)
+    ttf_font_ref[] = call_SDL(() -> TTF_OpenFont("ex/Liberation.ttf", 16), res -> res != C_NULL)
 
     @assert (win = SDL_CreateWindow("Menu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIN_WIDTH, WIN_HEIGHT, SDL_WINDOW_SHOWN)) != C_NULL "error creating SDL window: $(unsafe_string(SDL_GetError()))"
     # create renderer for drawing to the window
     @assert (renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)) != C_NULL "error creating SDL renderer: $(unsafe_string(SDL_GetError()))"
     try
         # setup rendering details
-        SDL_SetRenderDrawColor(renderer, 25, 25, 25, 200) # dark grey
-
         gamestate = MenuState()
 
         transition_state(nothing, gamestate)
