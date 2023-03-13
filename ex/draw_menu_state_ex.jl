@@ -3,6 +3,33 @@
 using SimpleDirectMediaLayer
 using SimpleDirectMediaLayer.LibSDL2
 
+# to simplify calling SDL functions that indicate error states in different ways,
+# create a utility that lets callers specify a failure condition and exception 
+# raising / handling.
+"""
+    call_SDL(sdl_fn, success_check_fn)
+
+Pass a closure representing a specific call to an SDL-related function, and a 
+function accepting the result of sdl_fn which returns a bool indicating if
+sdl_fn executed successfully.
+
+This function either raises an error which surfaces the result SDL_GetError on
+failure or returns the result of the call to sdl_fn.
+"""
+function call_SDL(sdl_fn, success_check_fn)
+    local res
+    try
+        res = sdl_fn()
+    catch e
+        throw(e)
+    end
+
+    if !success_check_fn(res)
+        throw(ErrorException("Error encountered when calling SDL: $(unsafe_string(SDL_GetError()))"))
+    end
+    return res
+end
+
 # we have two game states: menu, and "play". 
 # In the menu, the user is prompted to play (Enter) or to exit (Escape). 
 # In "Play", the user presses wasd or arrow keys to move between UP, LEFT, CENTER, DOWN, RIGHT states, and can press Escape to return to Menu.
@@ -227,10 +254,10 @@ function main()
 
     
     # INITIALIZE SDL
-    @assert SDL_Init(SDL_INIT_EVERYTHING) == 0 "error initializing SDL: $(unsafe_string(SDL_GetError()))"
+    call_SDL(() -> SDL_Init(SDL_INIT_EVERYTHING), res -> res == 0)
     # Initialize TTF for text rendering
-    @assert TTF_Init() == 0 "error initializing TTF: $(unsafe_string(SDL_GetError()))"
-    @assert (ttf_font_ref[] = TTF_OpenFont("ex/Conquest.ttf", 32)) != C_NULL "error loading TTF Font: $(unsafe_string(SDL_GetError()))"
+    call_SDL(() -> TTF_Init(), res -> res == 0)
+    ttf_font_ref[] = call_SDL(() -> TTF_OpenFont("ex/Conquest.ttf", 32), res -> res != C_NULL)
 
     @assert (win = SDL_CreateWindow("Menu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIN_WIDTH, WIN_HEIGHT, SDL_WINDOW_SHOWN)) != C_NULL "error creating SDL window: $(unsafe_string(SDL_GetError()))"
     # create renderer for drawing to the window
