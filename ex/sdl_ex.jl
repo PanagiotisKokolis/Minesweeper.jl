@@ -35,6 +35,8 @@ SDL_FreeSurface(surface)
 
 w_ref, h_ref = Ref{Cint}(0), Ref{Cint}(0)
 # QueryTexture queries the pixel format of the Surface (which can be different CPU vs. Texture on GPU)
+# This is querying the width and height of the loaded texture, filling their values into w_ref and h_ref. We dereference those Refs in the try block
+# just once, because we only need the height, width at the beginning.
 SDL_QueryTexture(tex, C_NULL, C_NULL, w_ref, h_ref)
 
 try
