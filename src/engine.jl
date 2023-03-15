@@ -7,18 +7,9 @@
 #   2. update game state
 #   3. render game state
 
-struct Button
-    x::Int
-    y::Int
-    w::Int
-    h::Int
-end
-
 abstract type AppState end
 
-struct MainMenuState <: AppState
-    diff_buttons::Vector{Button}
-end
+struct MainMenuState <: AppState end
 
 struct ResultState <: AppState end
 struct PlayState <: AppState end
