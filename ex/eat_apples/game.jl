@@ -9,3 +9,10 @@ struct EatingApplesGame
     height::Int
     entities::Vector{Entity} # to refine
 end
+function EatingApplesGame()
+    return EatingApplesGame(12, 12, create_entities())
+end
+
+function create_entities()
+    return Entity[]
+end

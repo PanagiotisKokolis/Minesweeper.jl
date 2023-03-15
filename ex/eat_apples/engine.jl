@@ -9,9 +9,29 @@ struct MainMenuState <: MenuState end
 struct PauseMenuState <: MenuState
     game::EatingApplesGame
 end
-
 struct PlayState <: EngineState 
     game::EatingApplesGame
+end
+struct QuitState <: EngineState end
+
+# STATE TRANSITION helper function, doesn't do much for now.
+# do nothing if the state we're leaving and the state we're going to are the same
+transition_state(::S, ::S) where {S <: EngineState} = nothing
+
+function transition_state(::Union{Nothing, PauseMenuState}, ::MainMenuState)
+    # whenever you enter the menu state.
+    println("You are in the main menu. Press Escape to quit or Enter to play.")
+end
+
+function transition_state(::MenuState, ::PlayState)
+    # whenever you enter the Play state
+    println("You are playing. Use WASD or arrow keys to move around.")
+end
+
+transition_state(::PlayState, ::PauseMenuState) = println("You have paused the game.")
+
+function transition_state(old::EngineState, new::EngineState)
+    println("Exiting $old Entering $new")
 end
 
 
@@ -36,7 +56,7 @@ function start_game()
     # TTF for text rendering
     call_SDL(() -> TTF_Init(), res -> res == 0)
     # load font.
-    ttf_font_ref[] = call_SDL(() -> TTF_OpenFont("../Liberation.ttf", 16), res -> res != C_NULL)
+    ttf_font_ref[] = call_SDL(() -> TTF_OpenFont(joinpath([@__DIR__, "../Liberation.ttf"]), 16), res -> res != C_NULL)
     # create SDL window and renderer
     win = call_SDL(() -> SDL_CreateWindow("Menu", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIN_WIDTH, WIN_HEIGHT, SDL_WINDOW_SHOWN), res -> res != C_NULL)
     renderer = renderer = call_SDL(() -> SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC), res -> res != C_NULL)
@@ -46,7 +66,7 @@ function start_game()
         # initialize game engine state.
         eng_state = MainMenuState()
 
-        while true # CHANGEME: replace with actual exit condition state.
+        while !(eng_state isa QuitState) 
 
             # handle inputs
             # we want to abstract the input device from the actual actions performed.
@@ -59,11 +79,12 @@ function start_game()
             # opens a menu. Clearly there are at least two different systems: one handling
             # action events in the game itself, and one handling inputs coming from a
             # user and their input device.
+            new_state = handle_input(eng_state)
 
             # Handling inputs can create transition events for the EngineState AND
             # create action events for gameplay. Transition EngineState first.
-            
-            # eng_state = transition_state(eng_state, ...)
+            transition_state(eng_state, new_state)
+            eng_state = new_state
             
             # update game
             # this would include transition between menu states as well as updating 
@@ -78,7 +99,6 @@ function start_game()
             # delay
             SDL_Delay(1000 ÷ 60)
 
-            break
         end
     finally
         # DESTROY SDL

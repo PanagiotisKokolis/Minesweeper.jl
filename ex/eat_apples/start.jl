@@ -4,10 +4,10 @@ using SimpleDirectMediaLayer
 using SimpleDirectMediaLayer.LibSDL2
 
 include("utils.jl")
-include("input.jl")
 include("entities.jl")
 include("game.jl")
 include("engine.jl")
+include("input.jl")
 
 # GAME DESCRIPTION:
 
