@@ -1,7 +1,16 @@
 # entry point for eating apples.
 
+using Logging
 using SimpleDirectMediaLayer
 using SimpleDirectMediaLayer.LibSDL2
+
+logger = ConsoleLogger(stderr, Logging.Debug)
+global_logger(logger)
+
+# common definitions
+
+# UPDATE THE GAME ONE TICK ###########
+function update! end
 
 include("utils.jl")
 include("entities.jl")

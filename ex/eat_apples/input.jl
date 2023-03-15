@@ -67,4 +67,14 @@ handle_input(pause::PauseMenuState, ::SDL_KeyboardEvent, ::Val{SDL_KEYDOWN}, ::V
 # GAME input handling ############
 # ESCAPE to PAUSE
 handle_input(play::PlayState, ::SDL_KeyboardEvent, ::Val{SDL_KEYDOWN}, ::Val{SDL_SCANCODE_ESCAPE}) = PauseMenuState(play.game)
-# TODO: parse gameplay inputs
+# MOVEMENT
+# There's an interesting coupling here: we're tying the keyboard input (in this state) both to a specific gameplay action 
+# AND a specific actor. Good enough for now, but it's an area we could decouple.
+# We also likely want to abstract 'push Action event to Game' out of here.
+# Another consideration is how do we associate controllers with entity IDs (:PLAYER), and other related thigns.
+# Also, this seems like a good place where macros would come in handy since a lot of this code repeats over variables;
+# imagine a loop that takes pairs (SCANCODE, ACTION) and generates each line below.
+handle_input(play::PlayState, ::SDL_KeyboardEvent, ::Val{SDL_KEYDOWN}, ::Val{SDL_SCANCODE_UP}) = (push!(play.game.actions, (:PLAYER, MoveAction(DIR_UP))); return play)
+handle_input(play::PlayState, ::SDL_KeyboardEvent, ::Val{SDL_KEYDOWN}, ::Val{SDL_SCANCODE_LEFT}) = (push!(play.game.actions, (:PLAYER, MoveAction(DIR_LEFT))); return play)
+handle_input(play::PlayState, ::SDL_KeyboardEvent, ::Val{SDL_KEYDOWN}, ::Val{SDL_SCANCODE_DOWN}) = (push!(play.game.actions, (:PLAYER, MoveAction(DIR_DOWN))); return play)
+handle_input(play::PlayState, ::SDL_KeyboardEvent, ::Val{SDL_KEYDOWN}, ::Val{SDL_SCANCODE_RIGHT}) = (push!(play.game.actions, (:PLAYER, MoveAction(DIR_RIGHT))); return play)
