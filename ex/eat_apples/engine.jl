@@ -14,7 +14,7 @@ function transition_state(::MenuState, ::PlayState)
     @info "You are playing. Use WASD or arrow keys to move around."
 end
 
-transition_state(::PlayState, ::PauseMenuState) = println("You have paused the game.")
+transition_state(::PlayState, ::PauseMenuState) = @info "You have paused the game."
 
 function transition_state(old::EngineState, new::EngineState)
     @info "Exiting $old Entering $new"
