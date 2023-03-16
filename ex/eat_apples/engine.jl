@@ -71,6 +71,18 @@ function start_game()
             # create action events for gameplay. Transition EngineState first.
             transition_state(eng_state, new_state)
             eng_state = new_state
+
+            # we also want to perform "AI" actions, really just randomly moving apples every
+            # so often. Not sure  if this should be in 'update!', but if I think of AI as a
+            # controller ( like player controller via inputs), it should really come before 
+            # update! each frame. This also pushes actions to game.actions
+
+            # this could also be thought of as the game updating itself according to "rules",
+            # like physics... however, that's only because this game is simple. 
+            # rather than consider this an update to the game state itself, it's really more
+            # querying the entity AIs about which action they want to take (which depends
+            # on the game state, sure)
+            poll_ai(eng_state)
             
             # update game
             # this would include transition between menu states as well as updating 

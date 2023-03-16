@@ -14,6 +14,7 @@ end
 mutable struct Apple <: Entity 
     x::Int
     y::Int
+    patience::Int
 end
 
 # -- GAME ACTIONS TYPES
