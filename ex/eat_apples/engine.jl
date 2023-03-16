@@ -1,37 +1,23 @@
 # game engine for Eating Apples.
 
-# states for the game engine itself. I'm actually not sure if this is how I should
-# represent and think about this.
-abstract type EngineState end
-
-abstract type MenuState <: EngineState end
-struct MainMenuState <: MenuState end
-struct PauseMenuState <: MenuState
-    game::EatingApplesGame
-end
-struct PlayState <: EngineState 
-    game::EatingApplesGame
-end
-struct QuitState <: EngineState end
-
 # STATE TRANSITION helper function, doesn't do much for now.
 # do nothing if the state we're leaving and the state we're going to are the same
 transition_state(::S, ::S) where {S <: EngineState} = nothing
 
 function transition_state(::Union{Nothing, PauseMenuState}, ::MainMenuState)
     # whenever you enter the menu state.
-    println("You are in the main menu. Press Escape to quit or Enter to play.")
+    @info "You are in the main menu. Press Escape to quit or Enter to play."
 end
 
 function transition_state(::MenuState, ::PlayState)
     # whenever you enter the Play state
-    println("You are playing. Use WASD or arrow keys to move around.")
+    @info "You are playing. Use WASD or arrow keys to move around."
 end
 
 transition_state(::PlayState, ::PauseMenuState) = println("You have paused the game.")
 
 function transition_state(old::EngineState, new::EngineState)
-    println("Exiting $old Entering $new")
+    @info "Exiting $old Entering $new"
 end
 
 
@@ -93,6 +79,7 @@ function start_game()
             # What separating these two things would allow us to do is to have 
             # game event actions continue to update the play state while the user
             # is in a different "engine" state, like in a menu.
+            update!(eng_state)
 
             # render game
 

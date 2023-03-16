@@ -1,41 +1,15 @@
 # structs and functionality that represent the gameplay of eating apples
 
 # 
-@enum Direction begin
-    DIR_UP=1
-    DIR_LEFT=2
-    DIR_RIGHT=3
-    DIR_DOWN=4
-end
 
-"""
-    GameAction
 
-The supertype of all gameplay actions. These are actions taken by the 
-Entities of the game.
-"""
-abstract type GameAction end
-
-struct MoveAction <: GameAction
-    direction::Direction
-end
-
-"""
-    Represents the game state of Eating Apples. This includes the 
-    size of the game board, the entities contained and their states.
-"""
-struct EatingApplesGame
-    width::Int
-    height::Int
-    entities::Dict{Symbol, Entity} # to refine
-    actions::Vector{Tuple{Symbol, GameAction}} # to refine
-end
 function EatingApplesGame()
     return EatingApplesGame(12, 12, init_entities(), init_actions())
 end
 
 function init_entities()
-    return Dict{Symbol, Entity}()
+    player = :PLAYER => Player(6, 6)
+    return Dict(player)
 end
 
 function init_actions()
@@ -43,6 +17,10 @@ function init_actions()
 end
 
 # UPDATE THE GAME ONE TICK ###########
+
+# dispatch on the engine state
+update!(state::PlayState) = update!(state.game)
+update!(::EngineState) = nothing
 
 function update!(game::EatingApplesGame)
 
@@ -57,6 +35,24 @@ function update!(game::EatingApplesGame)
 
     while !isempty(game.actions)
         entity, action = popfirst!(game.actions)
-        update!(game, entities[entity], action)
+        update!(game, get(game.entities, entity, nothing), action)
     end
 
+    return
+end
+
+# put the update! method for deletion in game.jl since it's really game-related logic
+function update!(game, entity::Entity, ::DeleteAction)
+    # NOTE: this is an inefficient search to find the correct key. I could solve this 
+    #    with dispatching on Symbol first, but I am reducing overall complexitiy at the cost
+    #    of "good" runtime algorithms.
+    try
+        e_key = only(filter(p -> p[2] == entity, pairs(game.entities)))
+        @debug "Deleting $(game.entities[e_key])"
+        delete!(game.entities, e_key)
+    catch e
+        @debug "$e"
+    end
+
+    return
+end

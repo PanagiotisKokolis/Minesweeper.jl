@@ -12,6 +12,7 @@ global_logger(logger)
 # UPDATE THE GAME ONE TICK ###########
 function update! end
 
+include("types.jl")
 include("utils.jl")
 include("entities.jl")
 include("game.jl")
