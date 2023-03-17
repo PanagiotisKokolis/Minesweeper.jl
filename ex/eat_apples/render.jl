@@ -59,12 +59,43 @@ end
 function _render(renderer, pause::PauseMenuState)
     # render the pause screen, which shows some text about available actions 
     # and the remaining apples.
-    # "Game Paused. Press Escape to quit or Enter to continue." 
+    # "Game Paused. Press Escape to return to main menu or Enter to continue." 
     # "N apples remain"
     return
 end
 
-function _render(renderer, game::PlayState)
+function _render(renderer, state::PlayState)
+    # render the grid; we can make the grid dynamic based on the number of cells.
+
+    # we want padding between the cells so we can see the grid.
+    PADDING = 2 # pixels
+    # calculate grid size in pixels
+    outer_height = WIN_HEIGHT / state.game.height 
+    outer_width = WIN_WIDTH / state.game.width
+    inner_height = outer_height - PADDING
+    inner_width = outer_width - PADDING
+
+    # set render color to a beige 
+    SDL_SetRenderDrawColor(renderer, 255, 220, 235, 200)
+    for row in 1:state.game.height
+        for col in 1:state.game.width
+            # draw an empty rectangle at each grid position
+            rect = Ref(SDL_FRect((col-1) * outer_width + PADDING, (row-1) * outer_height + PADDING, inner_width, inner_height))
+            SDL_RenderDrawRectF(renderer, rect)
+            SDL_RenderFillRectF(renderer, rect)
+        end
+    end
+
+    # now draw the players and apples
+    for (_, entity) in state.game.entities
+        # draw a blue square.
+        SDL_SetRenderDrawColor(renderer, get_entity_draw_color(entity)...)
+        rect = Ref(SDL_FRect((entity.x-1) * outer_width + PADDING, (entity.y-1) * outer_height + PADDING, inner_width, inner_height))
+        SDL_RenderDrawRectF(renderer, rect)
+        SDL_RenderFillRectF(renderer, rect)
+    end
     return
 end
 
+get_entity_draw_color(::Player) = (80, 160, 250, 255)
+get_entity_draw_color(::Apple) = (255, 0, 0, 255)
