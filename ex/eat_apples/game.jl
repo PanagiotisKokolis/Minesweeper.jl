@@ -4,14 +4,26 @@
 
 
 function EatingApplesGame()
-    return EatingApplesGame(12, 12, init_entities(), init_actions())
+    width, height = rand(8:16), rand(8:16)
+    return EatingApplesGame(width, height, init_entities(width, height), init_actions())
 end
 
-function init_entities()
-    player = :PLAYER => Player(6, 6)
-    apple1 = :APPLE1 => Apple(2, 3, 0)
-    apple2 = :APPLE2 => Apple(9, 9, 0)
-    return Dict(player, apple1, apple2)
+function init_entities(width, height)
+    entities = Dict{Symbol, Entity}()
+    n_apples = rand(((width*height)÷10):((width*height)÷5))
+    # find random starting locations for entities
+    positions = CartesianIndices((1:width, 1:height))
+    locations = first(randperm(length(positions)), n_apples+1)
+
+    for i in 1:(n_apples+1)
+        # create new apple
+        ent_name = i == 1 ? :PLAYER : Symbol("APPLE$(i-1)")
+        position = positions[locations[i]].I
+        entity = i == 1 ? Player(position...) : Apple(position..., 0)
+        entities[ent_name] = entity
+    end
+
+    return entities
 end
 
 function init_actions()
