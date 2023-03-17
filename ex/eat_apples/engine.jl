@@ -27,6 +27,8 @@ end
 
 const WIN_WIDTH, WIN_HEIGHT = 820, 640
 const ttf_font_ref = Ref{Ptr{TTF_Font}}()
+# textures contains created textures used for rendering throughout the program; these all must be destroyed before program exit
+const textures = Dict{String, Tuple{Ptr{SDL_Surface}, Ptr{SDL_Texture}}}()
 
 
 function start_game()
@@ -94,12 +96,18 @@ function start_game()
             update!(eng_state)
 
             # render game
+            render(renderer, eng_state)
 
             # delay
             SDL_Delay(1000 ÷ 60)
 
         end
     finally
+        # free all surfaces, textures
+        for (surf, txtr) in values(textures)
+            SDL_DestroyTexture(txtr)
+            SDL_FreeSurface(surf)
+        end
         # DESTROY SDL
 
         TTF_CloseFont(ttf_font_ref[])

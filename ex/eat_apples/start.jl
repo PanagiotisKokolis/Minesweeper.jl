@@ -12,11 +12,15 @@ global_logger(logger)
 # UPDATE THE GAME ONE TICK ###########
 function update! end
 
+function render end
+function _render end
+
 include("types.jl")
 include("utils.jl")
 include("entities.jl")
 include("game.jl")
 include("engine.jl")
+include("render.jl")
 include("input.jl")
 
 # GAME DESCRIPTION:
