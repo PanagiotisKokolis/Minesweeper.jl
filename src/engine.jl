@@ -31,9 +31,6 @@ function handle_input(state::AppState)
         if !isnothing(result)
             return result
         end 
-
-        println("Breaking early ! Change me when you should.")
-        break
     end
     # if we haven't returned a new state to transition to, return the current state 
     return state
@@ -59,9 +56,30 @@ handle_input(::MainMenuState, ::SDL_KeyboardEvent, ::Val{SDL_KEYDOWN}, ::Val{SDL
 
 function start_game()
 
-    while true
+    # INITIALIZE SDL
+    call_SDL(() -> SDL_Init(SDL_INIT_EVERYTHING), res -> res == 0)
+    # Initialize TTF for text rendering
+    call_SDL(() -> TTF_Init(), res -> res == 0)
+    # create window and renderer
+    win = call_SDL(() -> SDL_CreateWindow("Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIN_WIDTH, WIN_HEIGHT, SDL_WINDOW_SHOWN), res -> res != C_NULL)
+    renderer = call_SDL(() -> SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC), res -> res != C_NULL)
 
+    eng_state = MainMenuState()
 
-        break
+    try
+
+        while !(eng_state isa QuitState)
+
+            eng_state = handle_input(eng_state)
+
+            SDL_Delay(1000 ÷ 60)
+        end
+    finally
+
+        # SDL TEARDOWN
+        TTF_Quit()
+        SDL_DestroyRenderer(renderer)
+        SDL_DestroyWindow(win)
+        SDL_Quit()
     end
 end
