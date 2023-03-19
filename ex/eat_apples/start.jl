@@ -1,5 +1,6 @@
 # entry point for eating apples.
 
+using Random
 using Logging
 using SimpleDirectMediaLayer
 using SimpleDirectMediaLayer.LibSDL2
