@@ -26,6 +26,7 @@ function handle_input(state::AppState)
         type = SDL_EventType(event.type) # cast the Uint to an SDL_EventType
         # handle inputs (mostly mouse, but some keyboard events like ESC)
         # we want to change behavior based on app state.
+        @debug "Processing event for $type"
         result = handle_input(state, Val(type), event)
 
         if !isnothing(result)
@@ -51,6 +52,16 @@ end
 
 handle_input(::MainMenuState, ::SDL_KeyboardEvent, ::Val{SDL_KEYDOWN}, ::Val{SDL_SCANCODE_ESCAPE}) = QuitState()
 
+# handle mouse button events
+function handle_input(state::AppState, type::Val{SDL_MOUSEBUTTONDOWN}, event)
+    @debug "Handling mouse button down event."
+    button_event = event.button
+    button_code = event.button.button
+    # dispatch on state, SDL_MouseButtonEvent, SDL_MOUSEBUTTONDOWN, which mouse button
+    return handle_input(state, button_event, type, Val(button_code))
+end
+
+handle_input(state::MainMenuState, ::SDL_MouseButtonEvent, ::Val{SDL_MOUSEBUTTONDOWN}, ::Val{SDL_BUTTON_LEFT}) = (println("LEFT MOUSE CLICK"); return state)
 
 
 
@@ -63,12 +74,11 @@ function start_game()
     # create window and renderer
     win = call_SDL(() -> SDL_CreateWindow("Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIN_WIDTH, WIN_HEIGHT, SDL_WINDOW_SHOWN), res -> res != C_NULL)
     renderer = call_SDL(() -> SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC), res -> res != C_NULL)
-
-    eng_state = MainMenuState()
-
     try
+        eng_state = MainMenuState()
 
         while !(eng_state isa QuitState)
+
 
             eng_state = handle_input(eng_state)
 

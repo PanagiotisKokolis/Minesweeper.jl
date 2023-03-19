@@ -17,4 +17,6 @@ include("utils.jl")
 include("game.jl")
 include("engine.jl")
 
+start_game()
+
 end
