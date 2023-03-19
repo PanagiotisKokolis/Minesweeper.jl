@@ -63,6 +63,24 @@ end
 
 handle_input(state::MainMenuState, ::SDL_MouseButtonEvent, ::Val{SDL_MOUSEBUTTONDOWN}, ::Val{SDL_BUTTON_LEFT}) = (println("LEFT MOUSE CLICK"); return state)
 
+function select_difficulty(x, y, width, height)
+    #get the click function
+    # easy 0 +(width/3) < easy < width - (width/3)
+    # easy (height/3) + (height/9)  < easy < height - (2)(height/9)
+    #determined if it clicked something
+    if (width/3) < x < width - (width/3)
+        if height/3 < y < (height/3) +(height/9)
+            return easy
+        elseif  (height/3)+(height/9) < y < (height/3) + 2(height/9)
+            return medium 
+        elseif (height/3) + 2*(height/9)< y < height - (height/3)
+            return hard
+        end
+    end
+    return nothing
+end
+
+
 
 
 function start_game()
