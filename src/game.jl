@@ -16,6 +16,9 @@ struct MinesweeperGame{N, M}
     hints::SMatrix{N, M, UInt8}
 end
 
+nrows(::MinesweeperGame{N, M}) where {N, M} = N
+ncols(::MinesweeperGame{N, M}) where {N, M} = M
+
 function create_game(difficulty)
 
     if difficulty == :easy
@@ -62,4 +65,9 @@ end
 
 function neighbor_inds(rows, cols, (row, col))
     return CartesianIndices((max(1, row-1):min(rows, row+1), max(1, col-1):min(cols, col+1)))
+end
+
+function is_game_over(game::MinesweeperGame)::Bool
+    # check if any opened cell contains a mine
+    return any(game.mines[game.states .== opened])
 end
