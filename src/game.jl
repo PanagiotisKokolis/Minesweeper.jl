@@ -89,7 +89,7 @@ end
 function flood_fill(game::MinesweeperGame, rowi, colj)
     reveal_queue = []
     push!(reveal_queue, neighbor_inds(nrows(game), ncols(game), (rowi,colj))...)
-    while!(isempty(reveal_queue))
+    while !(isempty(reveal_queue))
         temp = popfirst!(reveal_queue)
         if game.states[temp] == unopened
             game.states[temp]= opened
@@ -97,6 +97,7 @@ function flood_fill(game::MinesweeperGame, rowi, colj)
                 push!(reveal_queue, neighbor_inds(nrows(game), ncols(game), temp.I)...)
             end
         end
+    end
     return
 end
 

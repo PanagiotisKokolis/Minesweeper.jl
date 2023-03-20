@@ -20,6 +20,6 @@ include("game.jl")
 include("engine.jl")
 include("render.jl")
 
-start_game()
+# start_game()
 
 end
