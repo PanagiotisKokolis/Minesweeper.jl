@@ -75,3 +75,33 @@ function _render(renderer, ::MainMenuState)
     return
 
 end
+
+
+function _render(renderer, state::PlayState)
+    # render a game in progress. 
+    # we render this as a grid, using colored squares to indicate the following:
+    # grey for unopened
+    # white with black text for opened (TODO)
+    # red for flagged
+    # black for mine.
+
+    PAD = 2 # pixels
+    out_height = WIN_HEIGHT / nrows(state.game)
+    out_width = WIN_WIDTH / ncols(state.game)
+    in_height = out_height - PAD
+    in_width = out_width - PAD
+
+    for row in 1:nrows(state.game)
+        for col in 1:ncols(state.game)
+            # set draw color based on the cell location
+            SDL_SetRenderDrawColor(renderer, get_cell_draw_color(state.game, row, col)...)
+            # draw a rectangle at each grid position
+            rect = Ref(SDL_FRect((col-1) * out_width + PAD, (row-1) * out_height + PAD, in_width, in_height))
+            SDL_RenderDrawRectF(renderer, rect)
+            SDL_RenderFillRectF(renderer, rect)
+        end
+    end
+
+end
+
+function get_cell_draw_color(game::MinesweeperGame, row, col) end
