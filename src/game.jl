@@ -16,6 +16,9 @@ struct MinesweeperGame{N, M}
     hints::SMatrix{N, M, UInt8}
 end
 
+nrows(::MinesweeperGame{N, M}) where {N, M} = N
+ncols(::MinesweeperGame{N, M}) where {N, M} = M
+
 function create_game(difficulty)
 
     if difficulty == :easy
@@ -82,6 +85,7 @@ function reveal(game::MinesweeperGame, rowi, colj)
     end
     return
 end
+
 function flood_fill(game::MinesweeperGame, rowi, colj)
     reveal_queue = []
     push!(reveal_queue, neighbor_inds(nrows(game), ncols(game), (rowi,colj))...)
@@ -94,4 +98,9 @@ function flood_fill(game::MinesweeperGame, rowi, colj)
             end
         end
     return
+end
+
+function is_game_over(game::MinesweeperGame)::Bool
+    # check if any opened cell contains a mine
+    return any(game.mines[game.states .== opened])
 end
