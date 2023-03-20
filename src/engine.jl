@@ -125,6 +125,11 @@ function start_game()
             SDL_Delay(1000 ÷ 60)
         end
     finally
+        # free all surfaces, textures
+        for (surf, txtr) in values(textures)
+            SDL_DestroyTexture(txtr)
+            SDL_FreeSurface(surf)
+        end
 
         # SDL TEARDOWN
         TTF_CloseFont(ttf_font_ref[])
