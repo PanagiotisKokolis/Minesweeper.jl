@@ -104,4 +104,4 @@ function _render(renderer, state::PlayState)
 
 end
 
-function get_cell_draw_color(game::MinesweeperGame, row, col) end
+get_cell_draw_color(game::MinesweeperGame, row, col) = (100, 100, 100, 255)

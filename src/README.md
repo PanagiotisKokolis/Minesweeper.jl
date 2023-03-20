@@ -8,3 +8,11 @@
    3. **Control Sets** - organize sets of bindings (inputs to actions) into different contexts (menus, inventories, etc); these can be placed on a stack
 
 2. 
+
+
+# TO DO
+(3/20/2023)
+- Handle mouse clicks in PlayState (left / right); reveal and check for win/lose
+- Render play state completely; mines, hints, flags
+- Write functionality for checking win/lose states
+- 
