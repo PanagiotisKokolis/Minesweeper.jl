@@ -16,9 +16,9 @@ const ttf_font_ref = Ref{Ptr{TTF_Font}}()
 const textures = Dict{String, Tuple{Ptr{SDL_Surface}, Ptr{SDL_Texture}}}()
 
 include("utils.jl")
-include("render.jl")
 include("game.jl")
 include("engine.jl")
+include("render.jl")
 
 start_game()
 

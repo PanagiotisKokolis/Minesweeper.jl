@@ -18,4 +18,4 @@ render(_, ::QuitState) = @debug "Render called on QuitState"
 
 function render(renderer, ::MainMenuState)
 
-    
+end
