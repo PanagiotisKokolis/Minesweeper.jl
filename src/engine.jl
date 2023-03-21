@@ -108,7 +108,7 @@ function start_game()
     # Initialize TTF for text rendering
     call_SDL(() -> TTF_Init(), res -> res == 0)
     # load ttf font
-    ttf_font_ref[] = call_SDL(() -> TTF_OpenFont(joinpath([@__DIR__, "../ex/Liberation.ttf"]), 16), res -> res != C_NULL)
+    font_mgr["liberation"] = FontManager(joinpath([@__DIR__, "../ex/Liberation.ttf"]))
     # create window and renderer
     win = call_SDL(() -> SDL_CreateWindow("Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIN_WIDTH, WIN_HEIGHT, SDL_WINDOW_SHOWN), res -> res != C_NULL)
     renderer = call_SDL(() -> SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC), res -> res != C_NULL)
@@ -125,14 +125,13 @@ function start_game()
             SDL_Delay(1000 ÷ 60)
         end
     finally
-        # free all surfaces, textures
-        for (surf, txtr) in values(textures)
-            SDL_DestroyTexture(txtr)
-            SDL_FreeSurface(surf)
-        end
 
         # SDL TEARDOWN
-        TTF_CloseFont(ttf_font_ref[])
+        empty!(textures)
+        empty!(font_mgr)
+        # force garbage collection here so the finalizers for textures, fonts
+        # run before we quit TTF and SDL.
+        GC.gc()
         TTF_Quit()
         SDL_DestroyRenderer(renderer)
         SDL_DestroyWindow(win)

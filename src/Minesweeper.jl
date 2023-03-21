@@ -9,13 +9,15 @@ using SimpleDirectMediaLayer.LibSDL2
 logger = Base.SimpleLogger(stderr, Logging.Debug)
 global_logger(logger)
 
+include("utils.jl")
+include("text.jl")
+
 # global variables, these are just for placeholding; change later
 const WIN_WIDTH = 640
 const WIN_HEIGHT = 720
-const ttf_font_ref = Ref{Ptr{TTF_Font}}()
-const textures = Dict{String, Tuple{Ptr{SDL_Surface}, Ptr{SDL_Texture}}}()
+const font_mgr = Dict{String, FontManager}()
+const textures = Dict{String, TextDrawable}()
 
-include("utils.jl")
 include("game.jl")
 include("engine.jl")
 include("render.jl")
