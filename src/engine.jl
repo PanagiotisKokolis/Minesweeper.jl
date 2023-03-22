@@ -104,7 +104,7 @@ end
 function start_game()
 
     # INITIALIZE SDL
-    call_SDL(() -> SDL_Init(SDL_INIT_EVERYTHING), res -> res == 0)
+    @sdl_assert () -> SDL_Init(SDL_INIT_EVERYTHING) res -> res == 0
     # Initialize TTF for text rendering
     call_SDL(() -> TTF_Init(), res -> res == 0)
     # load ttf font
