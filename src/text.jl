@@ -35,7 +35,7 @@ mutable struct TextDrawable
         x = new(txtr)
         # create finalizer to destroy texture when this struct has no more refs
         function f(t)
-            @async println("Destroying $t")
+            @async @debug "Destroying $t"
             SDL_DestroyTexture(t.texture)
         end
         finalizer(f, x)
