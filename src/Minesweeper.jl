@@ -20,6 +20,7 @@ const textures = Dict{String, TextDrawable}()
 
 include("game.jl")
 include("engine.jl")
+include("input.jl")
 include("render.jl")
 
 # start_game()
