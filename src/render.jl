@@ -1,4 +1,16 @@
 
+# helper functions for the window size for each app state
+get_state_window_size(::AppState) = (640, 640)
+get_state_window_size(state::PlayState) = (ncols(state.game) * 32, nrows(state.game) * 32)
+
+function get_renderer_size(renderer::Ptr{SDL_Renderer})::Tuple{Int, Int}
+    # get renderer height, weidth
+    renderer_h_ref = Ref{Int32}()
+    renderer_w_ref = Ref{Int32}()
+    @sdl_assert () -> SDL_GetRendererOutputSize(renderer, renderer_w_ref, renderer_h_ref) res -> res == 0
+    return renderer_w_ref[], renderer_h_ref[]
+end
+
 function render(renderer, state::AppState)
 
     # draw one frame, dispatch on state for specific rendering
@@ -35,7 +47,7 @@ function _render(renderer, ::MainMenuState)
     int_text = textures["menu_intermediate"]
     hard_text = textures["menu_hard"]
 
-
+    WIN_WIDTH, WIN_HEIGHT = get_renderer_size(renderer)
     # RENDER TEXTS
 
     # center them all horizontally
@@ -70,6 +82,8 @@ function _render(renderer, state::PlayState)
     # white with black text for opened (TODO)
     # red for flagged
     # black for mine.
+
+    WIN_WIDTH, WIN_HEIGHT = get_renderer_size(renderer)
 
     PAD = 2 # pixels
     out_height = WIN_HEIGHT / nrows(state.game)

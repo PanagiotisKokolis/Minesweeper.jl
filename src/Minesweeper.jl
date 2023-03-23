@@ -18,8 +18,6 @@ include("utils.jl")
 include("text.jl")
 
 # global variables, these are just for placeholding; change later
-const WIN_WIDTH = 640
-const WIN_HEIGHT = 720
 const font_mgr = Dict{String, FontManager}()
 const textures = Dict{String, TextDrawable}()
 

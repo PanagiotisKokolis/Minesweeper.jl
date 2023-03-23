@@ -60,6 +60,7 @@ Handle a left click on the main menu. If a difficulty is selected, then create a
 """
 function handle_input(state::MainMenuState, event::SDL_MouseButtonEvent, ::Val{SDL_MOUSEBUTTONDOWN}, ::Val{SDL_BUTTON_LEFT}) 
     @debug "Left click on MainMenuState"
+    WIN_WIDTH, WIN_HEIGHT = get_state_window_size(state)
     # get mouse click position
     mouse_x, mouse_y = event.x, event.y
     # check if difficulty clicked

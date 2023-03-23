@@ -60,6 +60,7 @@ function startup!(eng::GameEngine)
     @sdl_assert () -> TTF_Init() res -> res == 0
     eng.ttf_initialized = true
     # create window and renderer
+    WIN_WIDTH, WIN_HEIGHT = get_state_window_size(MainMenuState())
     eng.window = @sdl_assert () -> SDL_CreateWindow("Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIN_WIDTH, WIN_HEIGHT, SDL_WINDOW_SHOWN) res -> res != C_NULL
     eng.renderer = @sdl_assert () -> SDL_CreateRenderer(eng.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC) res -> res != C_NULL
     return
@@ -89,6 +90,22 @@ function shutdown!(eng::GameEngine)
     return
 end
 
+transition_state!(eng::GameEngine, state::AppState) = transition_state!(eng, eng.state, state)
+# if the new state is the same as the old state, do nothing
+transition_state!(eng::GameEngine, old_state::S, new_state::S) where {S <: AppState} = nothing
+function transition_state!(eng::GameEngine, _::AppState, new_state::AppState)
+    # new state is different from old state
+    eng.state = new_state
+    # for now, just resize the window to the new state's size
+    WIN_WIDTH, WIN_HEIGHT = get_state_window_size(new_state)
+    SDL_SetWindowSize(eng.window, WIN_WIDTH, WIN_HEIGHT)
+    #SDL_SetWindowPosition(eng.window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED)
+    return
+end
+
+
+
+
 """
     start_game()
 
@@ -106,7 +123,8 @@ function start_game()
     try
         while !(eng.state isa QuitState)
 
-            eng.state = handle_input(eng.state)
+            new_state = handle_input(eng.state)
+            transition_state!(eng, new_state)
 
             render(eng.renderer, eng.state)
 

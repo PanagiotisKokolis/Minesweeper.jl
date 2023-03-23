@@ -28,7 +28,7 @@ function create_game(difficulty)
         N, M = (16, 16)
         n_mines = 40
     elseif difficulty == :expert
-        N, M = (30, 16)
+        N, M = (16, 30)
         n_mines = 99
     end
     # create game
