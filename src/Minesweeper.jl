@@ -1,3 +1,8 @@
+"""
+    Minesweeper
+
+A simple Minesweeper game written in Julia using SDL2.
+"""
 module Minesweeper
 
 using Logging

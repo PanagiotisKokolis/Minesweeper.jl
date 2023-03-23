@@ -7,6 +7,11 @@
 #   2. update game state
 #   3. render game state
 
+"""
+    AppState
+
+An abstract type to represent the current state of the application.
+"""
 abstract type AppState end
 
 struct MainMenuState <: AppState end
@@ -42,6 +47,11 @@ mutable struct GameEngine
     end
 end
 
+"""
+    startup!(eng::GameEngine)
+
+Initialize SDL and TTF, and create the main game window.
+"""
 function startup!(eng::GameEngine)
     # initialize SDL
     @sdl_assert () -> SDL_Init(SDL_INIT_EVERYTHING) res -> res == 0
@@ -55,6 +65,11 @@ function startup!(eng::GameEngine)
     return
 end
 
+"""
+    shutdown!(eng::GameEngine)
+
+Destroy the main game window and teardown SDL and TTF.
+"""
 function shutdown!(eng::GameEngine)
     # destroy renderer and window
     SDL_DestroyRenderer(eng.renderer)
@@ -74,7 +89,13 @@ function shutdown!(eng::GameEngine)
     return
 end
 
+"""
+    start_game()
 
+Start an instance of the game engine, which initializes SDL/TTF and
+creates the main game window. This function will run until the user
+exits the game.
+"""
 function start_game()
 
     # INITIALIZE Game Engine

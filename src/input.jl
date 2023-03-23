@@ -1,5 +1,12 @@
+
+
 function handle_input end
 
+"""
+    handle_input(state::AppState) -> AppState
+
+Handle input events and return a new AppState to transition to.
+"""
 function handle_input(state::AppState)
 
     event_ref = Ref{SDL_Event}()
@@ -34,7 +41,7 @@ function handle_input(state::AppState, type::Val{SDL_KEYDOWN}, event)
 end
 
 handle_input(::MainMenuState, ::SDL_KeyboardEvent, ::Val{SDL_KEYDOWN}, ::Val{SDL_SCANCODE_ESCAPE}) = QuitState()
-# quit game while playing with escape
+# quit to main menu while playing with escape
 handle_input(::PlayState, ::SDL_KeyboardEvent, ::Val{SDL_KEYDOWN}, ::Val{SDL_SCANCODE_ESCAPE}) = MainMenuState()
 
 # handle mouse button events
@@ -46,8 +53,11 @@ function handle_input(state::AppState, type::Val{SDL_MOUSEBUTTONDOWN}, event)
     return handle_input(state, button_event, type, Val(button_code))
 end
 
-# left clicking in main menu should check if a new game will be created based on the clicked
-# difficulty, otherwise do nothing. If a new game is created, then change state to PlayState
+"""
+    handle_input(state::MainMenuState, event::SDL_MouseButtonEvent, ::Val{SDL_MOUSEBUTTONDOWN}, ::Val{SDL_BUTTON_LEFT}) -> AppState
+
+Handle a left click on the main menu. If a difficulty is selected, then create a new game and return a PlayState with that game.
+"""
 function handle_input(state::MainMenuState, event::SDL_MouseButtonEvent, ::Val{SDL_MOUSEBUTTONDOWN}, ::Val{SDL_BUTTON_LEFT}) 
     @debug "Left click on MainMenuState"
     # get mouse click position
@@ -63,6 +73,12 @@ function handle_input(state::MainMenuState, event::SDL_MouseButtonEvent, ::Val{S
     return state
 end
 
+"""
+    select_difficulty(x, y, width, height) -> Union{Symbol, Nothing}
+
+Determine if a click at (x, y) is within the bounds of a difficulty button. 
+If so, return the difficulty symbol (:easy, :intermediate, :expert). Otherwise, return nothing.
+"""
 function select_difficulty(x, y, width, height)
     #get the click function
     # easy 0 +(width/3) < easy < width - (width/3)

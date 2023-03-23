@@ -1,6 +1,10 @@
 # structs and utilities for rendering text.
 
-# manage access to a given font; creating fonts for sizes
+"""
+    FontManager
+
+Manages access to a given font, creating fonts for different sizes as needed.
+"""
 mutable struct FontManager
     path::String
     fonts::Dict{Int, Ptr{TTF_Font}}
@@ -17,6 +21,11 @@ mutable struct FontManager
 end
 FontManager(path::String) = FontManager(path, Dict{Int, Ptr{TTF_Font}}())
 
+"""
+    get_font(mgr::FontManager, size::Int)
+
+Load / retrieve a font for a given font size.
+"""
 function get_font(mgr::FontManager, size::Int)
     # load / retrieve a font for a given font size
     return get!(mgr.fonts, size, call_SDL(() -> TTF_OpenFont(mgr.path, size), res -> res != C_NULL))
@@ -28,7 +37,11 @@ function cleanup(mgr::FontManager)
     end
 end
 
+"""
+    TextDrawable
 
+A wrapper around an SDL_Texture that is created from a given string.
+"""
 mutable struct TextDrawable
     texture::Ptr{SDL_Texture}
     function TextDrawable(txtr)
@@ -41,6 +54,11 @@ mutable struct TextDrawable
         finalizer(f, x)
     end
 end
+"""
+    TextDrawable(renderer, font, color, text)
+
+Create a new TextDrawable from a given string.
+"""
 function TextDrawable(renderer, font, color, text)
     # create surface, convert to texture, then cleanup
     surf = TTF_RenderUTF8_Solid(font, text, color)
@@ -51,12 +69,12 @@ end
 
 function height(text::TextDrawable)
     h_ref = Ref{Int32}()
-    call_SDL(() -> SDL_QueryTexture(text.texture, C_NULL, C_NULL, C_NULL, h_ref), res -> res == 0)
+    @sdl_assert () -> SDL_QueryTexture(text.texture, C_NULL, C_NULL, C_NULL, h_ref) res -> res == 0
     return h_ref[]
 end
 function width(text::TextDrawable)
     w_ref = Ref{Int32}()
-    call_SDL(() -> SDL_QueryTexture(text.texture, C_NULL, C_NULL, w_ref, C_NULL), res -> res == 0)
+    @sdl_assert () -> SDL_QueryTexture(text.texture, C_NULL, C_NULL, w_ref, C_NULL) res -> res == 0
     return w_ref[]
 end
 
