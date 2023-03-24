@@ -25,6 +25,6 @@ include("game.jl")
 include("engine.jl")
 include("input.jl")
 include("render.jl")
-
+include("entry.jl")
 
 end
