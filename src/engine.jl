@@ -107,13 +107,13 @@ end
 
 
 """
-    start_game()
+    launch()
 
 Start an instance of the game engine, which initializes SDL/TTF and
 creates the main game window. This function will run until the user
 exits the game.
 """
-function start_game()
+function launch()
 
     # INITIALIZE Game Engine
     eng = GameEngine()

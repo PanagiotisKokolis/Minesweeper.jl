@@ -26,6 +26,5 @@ include("engine.jl")
 include("input.jl")
 include("render.jl")
 
-# start_game()
 
 end

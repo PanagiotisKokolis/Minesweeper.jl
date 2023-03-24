@@ -86,6 +86,11 @@ function reveal(game::MinesweeperGame, rowi, colj)
     return
 end
 
+"""
+    flood_fill(game::MinesweeperGame, rowi, colj)
+
+Flood fill algorithm to reveal all cells that are adjacent to a zero hint cell.
+"""
 function flood_fill(game::MinesweeperGame, rowi, colj)
     reveal_queue = []
     push!(reveal_queue, neighbor_inds(nrows(game), ncols(game), (rowi,colj))...)
