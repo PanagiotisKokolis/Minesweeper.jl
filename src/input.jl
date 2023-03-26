@@ -77,10 +77,19 @@ end
 function handle_input(state::PlayState, event::SDL_MouseButtonEvent, ::Val{SDL_MOUSEBUTTONDOWN}, ::Val{SDL_BUTTON_LEFT})
     #maybe make this part into a function to be called
     selected_row , selected_col  = selected_cell(state, event)
-    if reveal(state.game, selected_row, selected_col) == -1
-        @debug "clicked on a mine!"
-        # is_game_over(state.game)
+    reveal(state.game, selected_row, selected_col)
+    win_lose_condition = check_game_over(state.game)
+    if win_lose_condition == :win
+        #if is_game_over returs win -print won!  and goto mainmenustate
+        println("you won")
+        return MainMenuState()
+    elseif win_lose_condition == :lose
+        #if is_game_over returns lose - open all unopened and  print hit esc to try again
+        println("You lose! Hit Esc. to try again!")
+        state.game.states .= opened
     end
+        #else nothing
+
     return state
 end
 
