@@ -91,7 +91,6 @@ function  handle_input(state::PlayState, event::SDL_MouseButtonEvent, ::Val{SDL_
     elseif state.game.states[selected_row, selected_col] == flagged
         state.game.states[selected_row, selected_col] = unopened
     end
-    end
     return state
 end
 
