@@ -12,7 +12,9 @@
 
 # TO DO
 (3/20/2023)
-- Handle mouse clicks in PlayState (left / right); reveal and check for win/lose
-- Render play state completely; mines, hints, flags
+[x] Handle mouse clicks in PlayState (left / right); reveal
+[x] Render play state completely; mines, hints, flags
 - Write functionality for checking win/lose states
-- 
+
+(3/26/2023)
+- Implement functionality for win/lose states still
