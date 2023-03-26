@@ -86,10 +86,11 @@ end
 
 function  handle_input(state::PlayState, event::SDL_MouseButtonEvent, ::Val{SDL_MOUSEBUTTONDOWN}, ::Val{SDL_BUTTON_RIGHT})
     selected_row , selected_col  = selected_cell(state, event)
-    if state.game.states[selected_row,selected_col] != flagged
-        state.game.states[selected_row,selected_col] = flagged
-    else
-        state.game.states[selected_row,selected_col] = unopened
+    if state.game.states[selected_row, selected_col] != opened
+      if state.game.states[selected_row,selected_col] != flagged
+            state.game.states[selected_row,selected_col] = flagged
+      else state.game.states[selected_row,selected_col] = unopened
+      end
     end
     return state
 end
