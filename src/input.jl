@@ -96,11 +96,11 @@ end
 
 function selected_cell(state::PlayState, event::SDL_MouseButtonEvent)
     WIN_WIDTH, WIN_HEIGHT = get_state_window_size(state)
-    row_height = WIN_HEIGHT ÷ nrows(state.game)
-    col_height = WIN_WIDTH ÷ ncols(state.game)
+    row_size = WIN_HEIGHT ÷ nrows(state.game)
+    col_size = WIN_WIDTH ÷ ncols(state.game)
     mouse_x, mouse_y = event.x, event.y
-    selected_row =  (mouse_x ÷ row_height) + 1
-    selected_col =  (mouse_y ÷ col_height) + 1
+    selected_row =  (mouse_y ÷ row_size) + 1
+    selected_col =  (mouse_x ÷ col_size) + 1
     return selected_row , selected_col
 end
 
