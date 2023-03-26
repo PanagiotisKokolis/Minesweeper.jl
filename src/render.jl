@@ -82,6 +82,15 @@ function _render(renderer, state::PlayState)
     # white with black text for opened (TODO)
     # red for flagged
     # black for mine.
+    
+    # CREATE textures for hints here
+    if !("hints_0" in keys(textures))
+        font_12 = get_font(font_mgr["liberation"], 12)
+        color = SDL_Color(10, 10, 10, 255)
+        for i in 0:8
+            textures["hint_$i"] = TextDrawable(renderer, font_12, color, "$i")
+        end
+    end
 
     WIN_WIDTH, WIN_HEIGHT = get_renderer_size(renderer)
 
@@ -99,9 +108,37 @@ function _render(renderer, state::PlayState)
             rect = Ref(SDL_FRect((col-1) * out_width + PAD, (row-1) * out_height + PAD, in_width, in_height))
             SDL_RenderDrawRectF(renderer, rect)
             SDL_RenderFillRectF(renderer, rect)
+
+            # now we render textures for hints (eventually also flags and mines)
+            if state.game.states[row, col] == opened && !state.game.mines[row, col] # opened and not mine
+                # HINT
+                hint_count = state.game.hints[row, col]
+                hint_text = textures["hint_$hint_count"]
+                # we can't render textures using FRect, so convert these to ints.
+                # use double padding so it's centered in the cell
+                hint_x, hint_y = round(Int, (col-1) * out_width + 2*PAD), round(Int, (row-1) * out_height + 2*PAD)
+                hint_w, hint_h = round(Int, in_width-PAD), round(Int, in_height-PAD) # subtract PAD again so it's effectively - 2*PAD
+                hint_dest_ref = Ref(SDL_Rect(hint_x, hint_y, hint_w, hint_h))
+                SDL_RenderCopy(renderer, hint_text.texture, C_NULL, hint_dest_ref)
+            end
+                
         end
     end
 
 end
 
-get_cell_draw_color(game::MinesweeperGame, row, col) = (100, 100, 100, 255)
+function get_cell_draw_color(game::MinesweeperGame, row, col)
+    
+    # choose the render color based on the cell state:
+    # unopened grey, flagged red, black mine, white opened.
+    if game.states[row, col] == unopened
+        return (100, 100, 100, 255) # grey
+    elseif game.states[row, col] == flagged
+        return (240, 10, 30, 255) # red
+    end
+    # location is opened.
+    if game.mines[row, col] # location has mine
+        return (5, 5, 5, 255) # black
+    end
+    return (240, 240, 240, 255) # white for opened
+end
