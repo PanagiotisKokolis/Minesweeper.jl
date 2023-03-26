@@ -2,6 +2,7 @@
 
 using Random
 using Logging
+using Random
 using SimpleDirectMediaLayer
 using SimpleDirectMediaLayer.LibSDL2
 

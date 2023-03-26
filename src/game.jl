@@ -6,12 +6,18 @@
 end
 
 
+"""
+Represents a game of Minesweeper, parameterized by its size N x M.
+"""
 struct MinesweeperGame{N, M}
     # boards, each interesting property as a separate 2d array
     mines::SMatrix{N, M, Bool}
     states::MMatrix{N, M, CellState}
     hints::SMatrix{N, M, UInt8}
 end
+
+nrows(::MinesweeperGame{N, M}) where {N, M} = N
+ncols(::MinesweeperGame{N, M}) where {N, M} = M
 
 function create_game(difficulty)
 
@@ -22,7 +28,7 @@ function create_game(difficulty)
         N, M = (16, 16)
         n_mines = 40
     elseif difficulty == :expert
-        N, M = (30, 16)
+        N, M = (16, 30)
         n_mines = 99
     end
     # create game
@@ -59,4 +65,48 @@ end
 
 function neighbor_inds(rows, cols, (row, col))
     return CartesianIndices((max(1, row-1):min(rows, row+1), max(1, col-1):min(cols, col+1)))
+end
+
+#reveal- click a location, check if mine, if zero flood fill, otherwise reveal
+#  click as game input on a grid not pixel
+#what does reveal need? Playstate, the square relative to the pixel clicked
+# if cell state = unopened, set state to opened and check if is mine
+# if cell state is opened, flagged, do nothing
+# if is_mine true return gameover (-1)
+# if ! is_mine  show hint.
+function reveal(game::MinesweeperGame, rowi, colj)
+    if game.states[rowi,colj] == unopened
+        game.states[rowi,colj] = opened
+        if game.mines[rowi,colj]
+            return -1
+        elseif game.hints[rowi,colj] == 0
+            flood_fill(game, rowi, colj)
+        end
+    end
+    return
+end
+
+"""
+    flood_fill(game::MinesweeperGame, rowi, colj)
+
+Flood fill algorithm to reveal all cells that are adjacent to a zero hint cell.
+"""
+function flood_fill(game::MinesweeperGame, rowi, colj)
+    reveal_queue = []
+    push!(reveal_queue, neighbor_inds(nrows(game), ncols(game), (rowi,colj))...)
+    while !(isempty(reveal_queue))
+        temp = popfirst!(reveal_queue)
+        if game.states[temp] == unopened
+            game.states[temp]= opened
+            if game.hints[temp] == 0
+                push!(reveal_queue, neighbor_inds(nrows(game), ncols(game), temp.I)...)
+            end
+        end
+    end
+    return
+end
+
+function is_game_over(game::MinesweeperGame)::Bool
+    # check if any opened cell contains a mine
+    return any(game.mines[game.states .== opened])
 end
