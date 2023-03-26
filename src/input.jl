@@ -74,6 +74,36 @@ function handle_input(state::MainMenuState, event::SDL_MouseButtonEvent, ::Val{S
     return state
 end
 
+function handle_input(state::PlayState, event::SDL_MouseButtonEvent, ::Val{SDL_MOUSEBUTTONDOWN}, ::Val{SDL_BUTTON_LEFT})
+    #maybe make this part into a function to be called
+    selected_row , selected_col  = selected_cell(state, event)
+    if reveal(state.game, selected_row, selected_col) == -1
+        @debug "clicked on a mine!"
+        # is_game_over(state.game)
+    end
+    return state
+end
+
+function  handle_input(state::PlayState, event::SDL_MouseButtonEvent, ::Val{SDL_MOUSEBUTTONDOWN}, ::Val{SDL_BUTTON_RIGHT})
+    selected_row , selected_col  = selected_cell(state, event)
+    if state.game.states[selected_row,selected_col] != flagged
+        state.game.states[selected_row,selected_col] = flagged
+    else
+        state.game.states[selected_row,selected_col] = unopened
+    end
+    return state
+end
+
+function selected_cell(state::PlayState, event::SDL_MouseButtonEvent)
+    WIN_WIDTH, WIN_HEIGHT = get_state_window_size(state)
+    row_height = WIN_HEIGHT ÷ nrows(state.game)
+    col_height = WIN_WIDTH ÷ ncols(state.game)
+    mouse_x, mouse_y = event.x, event.y
+    selected_row =  (mouse_x ÷ row_height) + 1
+    selected_col =  (mouse_y ÷ col_height) + 1
+    return selected_row , selected_col
+end
+
 """
     select_difficulty(x, y, width, height) -> Union{Symbol, Nothing}
 
