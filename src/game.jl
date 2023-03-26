@@ -106,7 +106,12 @@ function flood_fill(game::MinesweeperGame, rowi, colj)
     return
 end
 
-function is_game_over(game::MinesweeperGame)::Bool
+function check_game_over(game::MinesweeperGame)
     # check if any opened cell contains a mine
-    return any(game.mines[game.states .== opened])
+    if any(game.mines[game.states .== opened])
+        return :lose
+    elseif sum(game.states .== unopened)+ sum(game.states .== flagged) == sum(game.mines)
+        return :win
+    end
+    return nothing
 end
