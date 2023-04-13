@@ -7,7 +7,13 @@
    2. **Controls** - bind inputs from various devices to certain actions
    3. **Control Sets** - organize sets of bindings (inputs to actions) into different contexts (menus, inventories, etc); these can be placed on a stack
 
-2. 
+2. **Game Logic**
+   1. **Complete Implementation** - fully implemented game logic
+   2. **Difficulties** - easy, medium, hard
+   3. **StateTransition** - menu and results state with transition logic via ESC key to play multiple rounds
+   
+3. **Rendering**
+   1. **SDLTTS** - graphical rendering done using SDL2 and TTS
 
 
 # TO DO
@@ -18,3 +24,8 @@
 
 (3/26/2023)
 - Implement functionality for win/lose states still
+
+(4/13/2023)
+[x] Implement functionality for win/lose states
+[x] Full playthrough
+- bug testing
